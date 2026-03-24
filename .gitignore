@@ -1,0 +1,15 @@
+*.jar
+runtime/
+*.exe
+*.zip
+
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
