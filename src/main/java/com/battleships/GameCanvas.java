@@ -63,28 +63,26 @@ public class GameCanvas extends Canvas {
     }
 
     private void clearCanvas() {
-        gc.setFill(Color.NAVY);
+        gc.setFill(Color.LIGHTSKYBLUE);
         gc.fillRect(0, 0, getWidth(), getHeight());
     }
 
     private void drawPlaceholder() {
-        gc.setStroke(Color.LIGHTBLUE);
+        gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
 
-        double cellSize = 40;
-        double offsetX = (getWidth() % cellSize) / 2;
-        double offsetY = (getHeight() % cellSize) / 2;
+        double cellSize = 35;
+        double offsetX = 0;
+        double offsetY = 0;
 
-        for (double x = offsetX; x < getWidth(); x += cellSize) {
-            gc.strokeLine(x, 0, x, getHeight());
+        for (double y = 0; y < 16; y++) {
+            for (double x = 0; x < 16; x++) {
+                gc.strokeLine(offsetX+x*cellSize, offsetY+y*cellSize,
+                    offsetX+(x+1)*cellSize, offsetY+y*cellSize);
+                gc.strokeLine(offsetX+x*cellSize, offsetY+y*cellSize,
+                    offsetX+x*cellSize, offsetY+(y+1)*cellSize);
+            }
         }
-
-        for (double y = offsetY; y < getHeight(); y += cellSize) {
-            gc.strokeLine(0, y, getWidth(), y);
-        }
-
-        gc.setFill(Color.WHITE);
-        gc.fillText("Battleships - Canvas Ready", getWidth() / 2 - 80, 30);
     }
 
     public GraphicsContext getGC() {
