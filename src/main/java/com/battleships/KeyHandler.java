@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class KeyHandler {
-
     private Set<KeyCode> pressedKeys;
 
     public KeyHandler() {

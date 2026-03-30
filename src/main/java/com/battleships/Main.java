@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private UI ui;
+    private GameController controller;
 
     public static void main(String[] args) {
         launch(args);
@@ -13,7 +14,8 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        ui = new UI(primaryStage);
+        controller = new GameController();
+        ui = new UI(primaryStage, controller);
         ui.show();
     }
 

@@ -10,15 +10,21 @@ public class GameCanvas extends Canvas {
     private GraphicsContext gc;
     private AnimationTimer gameLoop;
     private boolean running;
+    private GameController controller;
+    private UI ui;
+    private Player canvasActivePlayer;
+    // use this to track status of water spots. 
+    // for example: hidden, empty, hit, miss
+    public final int SPOT_SIZE = 35;
 
     private long lastUpdateTime;
     private double deltaTime;
 
-/*     private static final int TARGET_FPS = 60;
-    private static final double TARGET_TIME = 1_000_000_000.0 / TARGET_FPS; */
-
-    public GameCanvas(double width, double height) {
+    public GameCanvas(double width, double height, GameController controller, UI ui) {
         super(width, height);
+        this.ui = ui;
+        this.controller = controller;
+        this.canvasActivePlayer = controller.getCurrentActivePlayer();
         gc = getGraphicsContext2D();
         running = false;
         lastUpdateTime = 0;
@@ -32,6 +38,12 @@ public class GameCanvas extends Canvas {
 
         running = true;
         lastUpdateTime = System.nanoTime();
+
+        this.setOnMouseClicked(event -> {
+            int xi = (int)(event.getX() / SPOT_SIZE);
+            int yi = (int)(event.getY() / SPOT_SIZE);
+            controller.handleShot(xi, yi);
+        });
 
         gameLoop = new AnimationTimer() {
             @Override
@@ -55,32 +67,51 @@ public class GameCanvas extends Canvas {
         }
     }
 
-    public void update(double dt) {}
+    public void update(double dt) {
+        Player currentPlayer = controller.getCurrentActivePlayer();
+
+        if (!currentPlayer.equals(canvasActivePlayer)) {
+            System.out.println("Player updated!");
+            ui.updateView(controller);
+            canvasActivePlayer = currentPlayer;
+        }
+    }
 
     public void render() {
         clearCanvas();
-        drawPlaceholder();
+        drawCanvas();
     }
 
     private void clearCanvas() {
-        gc.setFill(Color.LIGHTSKYBLUE);
+        gc.setFill(Color.rgb(135, 205, 250));
         gc.fillRect(0, 0, getWidth(), getHeight());
     }
 
-    private void drawPlaceholder() {
+    private void drawCanvas() {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
-
-        double cellSize = 35;
+        
+        double cellSize = (double) SPOT_SIZE;
         double offsetX = 0;
         double offsetY = 0;
-
-        for (double y = 0; y < 16; y++) {
-            for (double x = 0; x < 16; x++) {
+        
+        for (double y = 0; y < 15; y++) {
+            for (double x = 0; x < 15; x++) {
                 gc.strokeLine(offsetX+x*cellSize, offsetY+y*cellSize,
-                    offsetX+(x+1)*cellSize, offsetY+y*cellSize);
+                offsetX+(x+1)*cellSize, offsetY+y*cellSize);
                 gc.strokeLine(offsetX+x*cellSize, offsetY+y*cellSize,
-                    offsetX+x*cellSize, offsetY+(y+1)*cellSize);
+                offsetX+x*cellSize, offsetY+(y+1)*cellSize);
+                String[][] waterSpots = controller.getCurrentActivePlayer().getWaterSpotsStatus();
+                switch (waterSpots[(int) y][(int) x]) {
+                    case "hit":
+                        gc.setFill(Color.BLACK);
+                        gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
+                        break;
+                    case "miss":
+                        gc.setFill(Color.rgb(95, 162, 204));
+                        gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
+                        break;
+                }
             }
         }
     }
