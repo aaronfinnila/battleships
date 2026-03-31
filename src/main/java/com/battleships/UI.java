@@ -106,6 +106,7 @@ public class UI {
             });
         });
 
+        updateTurnLabel();
         root.getChildren().setAll(gameViewPane);
     }
 
@@ -167,10 +168,8 @@ public class UI {
         borderPane.setCenter(gameCanvas);
     }
 
-    public void updateView(GameController controller) {
-        this.controller = controller;
+    public void updateTurnLabel() {
         turnLabel.setText(controller.getCurrentActivePlayer().getName() + "'s turn");
-        createGameViewPane();
     }
 
     public GameCanvas getGameCanvas() {

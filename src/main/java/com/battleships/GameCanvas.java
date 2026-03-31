@@ -72,7 +72,7 @@ public class GameCanvas extends Canvas {
 
         if (!currentPlayer.equals(canvasActivePlayer)) {
             System.out.println("Player updated!");
-            ui.updateView(controller);
+            ui.updateTurnLabel();
             canvasActivePlayer = currentPlayer;
         }
     }

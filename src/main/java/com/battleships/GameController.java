@@ -1,5 +1,8 @@
 package com.battleships;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 public class GameController {
     
     private Player player1;
@@ -27,13 +30,29 @@ public class GameController {
     public void handleShot(int x, int y) {
         String[][] waterSpots = currentActivePlayer.getWaterSpotsStatus();
         String shotStatus = waterSpots[y][x];
+        boolean changePlayer = false;
         switch (shotStatus) {
             case "empty":
-                handleShotMissed(x, y); break;
+                handleShotMissed(x, y); changePlayer = true; break;
             case "hidden":
-                handleShotHit(x, y); break;
+                handleShotHit(x, y); changePlayer = true; break;
+            case "hit":
+                handleShotFalse(); break;
+            case "miss":
+                handleShotFalse(); break;
         }
-        currentActivePlayer = currentActivePlayer.equals(player1) ? player2 : player1;
+        if (changePlayer == true) {
+            currentActivePlayer = currentActivePlayer.equals(player1) ? player2 : player1;
+        }
+    }
+
+    public void handleShotFalse() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText(null);
+        alert.setContentText("You can't shoot there!");
+
+        alert.showAndWait();
     }
 
     public void handleShotMissed(int x, int y) {
