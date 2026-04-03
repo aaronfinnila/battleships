@@ -7,9 +7,13 @@ import java.util.Set;
 
 public class KeyHandler {
     private Set<KeyCode> pressedKeys;
+    private GameController controller;
+    private UI ui;
 
-    public KeyHandler() {
+    public KeyHandler(GameController controller, UI ui) {
         pressedKeys = new HashSet<>();
+        this.controller = controller;
+        this.ui = ui;
     }
 
     public void handleKeyPressed(KeyEvent event) {
@@ -23,19 +27,57 @@ public class KeyHandler {
     }
 
     protected void onKeyPressed(KeyCode keyCode) {
-        // Examples:
-        // switch (keyCode) {
-        //     case UP, W -> moveUp();
-        //     case DOWN, S -> moveDown();
-        //     case LEFT, A -> moveLeft();
-        //     case RIGHT, D -> moveRight();
-        //     case ENTER, SPACE -> confirmAction();
-        //     case ESCAPE -> pauseGame();
-        // }
+        switch (keyCode) {
+            case UP, W -> handleUp();
+            case DOWN, S -> handleDown();
+            case LEFT, A -> handleLeft();
+            case RIGHT, D -> handleRight();
+            default -> {}
+        }
     }
 
     protected void onKeyReleased(KeyCode keyCode) {
         
+    }
+
+    public void handleUp() {
+        if (controller.getGameState() == controller.HIDESTATE) {
+            if (ui.shipRow <= 4 && ui.shipRow > 0) {
+                ui.shipRow--;
+            }
+        }
+    }
+
+    public void handleDown() {
+        if (controller.getGameState() == controller.HIDESTATE) {
+            if (ui.shipRow >= 0 && ui.shipRow < 4) {
+                ui.shipRow++;
+            }
+        }
+    }
+    
+    public void handleLeft() {
+        if (controller.getGameState() == controller.HIDESTATE) {
+            Ship ship = controller.getCurrentActivePlayer().getEquippedShip();
+            String rotation = ship.getRotation();
+            if (rotation == "vertical") {
+                ship.setRotation("horizontal");
+            } else {
+                ship.setRotation("vertical");
+            }
+        }
+    }
+
+    public void handleRight() {
+        if (controller.getGameState() == controller.HIDESTATE) {
+            Ship ship = controller.getCurrentActivePlayer().getEquippedShip();
+            String rotation = ship.getRotation();
+            if (rotation == "vertical") {
+                ship.setRotation("horizontal");
+            } else {
+                ship.setRotation("vertical");
+            }
+        }
     }
 
     public boolean isKeyPressed(KeyCode keyCode) {

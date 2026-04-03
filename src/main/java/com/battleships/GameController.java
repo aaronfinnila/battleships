@@ -8,11 +8,17 @@ public class GameController {
     private Player player1;
     private Player player2;
     private Player currentActivePlayer;
+    private int currentShipIndex;
+    private int gameState;
+    public final int HIDESTATE = 1;
+    public final int SHOOTSTATE = 2;
 
     public GameController() {
         player1 = new Player("");
         player2 = new Player("");
         currentActivePlayer = player1;
+        currentShipIndex = 0;
+        gameState = HIDESTATE;
     }
 
     public Player getPlayer1() {
@@ -25,6 +31,73 @@ public class GameController {
 
     public Player getCurrentActivePlayer() {
         return currentActivePlayer;
+    }
+
+    public int getGameState() {
+        return gameState;
+    }
+
+    public void handleClick(int x, int y) {
+        if (gameState == HIDESTATE) {
+            handleHide(x, y);
+        }
+        if (gameState == SHOOTSTATE) {
+            handleShot(x, y);
+        }
+    }
+
+    public void handleHide(int x, int y) {
+        if (player1.getShipsPlaced() == true && player2.getShipsPlaced() == true) {
+            gameState = SHOOTSTATE;
+        } else {
+            boolean changePlayer = false;
+            String[][] waterSpots = currentActivePlayer.getWaterSpotsStatus();
+            String shipRotation = currentActivePlayer.getEquippedShip().getRotation();
+            int shipLength = currentActivePlayer.getEquippedShip().getLength();
+            Ship currentShip = currentActivePlayer.getEquippedShip();
+            switch (shipRotation) {
+                case "vertical":
+                    for (int i = 0; i < shipLength; i++) {
+                        waterSpots[y+i][x] = "hidden";
+                    }
+                    break;
+                case "horizontal":
+                    for (int i = 0; i < shipLength; i++) {
+                        waterSpots[y][x+i] = "hidden";
+                    }
+                    break;
+            }
+            currentShip.setPlaced(true);
+            currentShipIndex += 1;
+            currentActivePlayer.changeEquippedShip(currentShipIndex);
+            if (allShipsPlaced() == true) {
+                currentActivePlayer.setShipsPlaced(true);
+                changePlayer = true;
+            }
+            if (changePlayer == true) {
+                currentActivePlayer = currentActivePlayer.equals(player1) ? player2 : player1;
+            }
+        }
+    }
+    
+    public void handleHideFalse() {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText(null);
+        alert.setContentText("You can't shoot there!");
+
+        alert.showAndWait();
+    }
+
+    public boolean allShipsPlaced() {
+        boolean allPlaced = true;
+        Ship[] ships = currentActivePlayer.getShips();
+        for (int i = 0; i < ships.length; i++) {
+            if (ships[i].getPlaced() == false) {
+                allPlaced = false;
+            }
+        }
+        return allPlaced;
     }
 
     public void handleShot(int x, int y) {

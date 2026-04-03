@@ -31,17 +31,18 @@ public class UI {
     private KeyHandler keyHandler;
     private VBox startMenuVbox;
     private Label turnLabel;
+    public int shipRow;
 
     public UI(Stage stage, GameController controller) {
         this.stage = stage;
         this.controller = controller;
         initialize();
     }
-
+    
     private void initialize() {
         root = new StackPane();
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        keyHandler = new KeyHandler();
+        keyHandler = new KeyHandler(controller, this);
         
         startMenuVbox = createStartMenuVBox();
         gameViewPane = createGameViewPane();
@@ -54,6 +55,7 @@ public class UI {
         scene.setOnKeyReleased(keyHandler::handleKeyReleased);
         
         stage.setScene(scene);
+        shipRow = 0;
     }
 
     public void show() {
@@ -141,6 +143,7 @@ public class UI {
         leftVbox.setAlignment(Pos.TOP_RIGHT);
         leftVbox.setPrefWidth(190);
         borderPane.setLeft(leftVbox);
+        
     }
 
     public void setBorderPaneRight(BorderPane borderPane) {

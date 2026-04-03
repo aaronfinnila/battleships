@@ -13,8 +13,8 @@ public class GameCanvas extends Canvas {
     private GameController controller;
     private UI ui;
     private Player canvasActivePlayer;
-    // use this to track status of water spots. 
-    // for example: hidden, empty, hit, miss
+    private double mouseX;
+    private double mouseY;
     public final int SPOT_SIZE = 35;
 
     private long lastUpdateTime;
@@ -42,7 +42,7 @@ public class GameCanvas extends Canvas {
         this.setOnMouseClicked(event -> {
             int xi = (int)(event.getX() / SPOT_SIZE);
             int yi = (int)(event.getY() / SPOT_SIZE);
-            controller.handleShot(xi, yi);
+            controller.handleClick(xi, yi);
         });
 
         gameLoop = new AnimationTimer() {
@@ -111,7 +111,29 @@ public class GameCanvas extends Canvas {
                         gc.setFill(Color.rgb(95, 162, 204));
                         gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
                         break;
+                    case "hidden":
+                        gc.setFill(Color.ORANGE);
+                        gc.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
+                        break;
                 }
+            }
+        }
+
+        if (controller.getGameState() == controller.HIDESTATE) {
+            this.setOnMouseMoved(event -> {
+                mouseX = event.getX();
+                mouseY = event.getY();
+            });
+            gc.setFill(Color.BROWN);
+            int length = controller.getCurrentActivePlayer().getEquippedShip().getLength();
+            String rotation = controller.getCurrentActivePlayer().getEquippedShip().getRotation();
+            switch (rotation) {
+                case "vertical":
+                    gc.fillRect(mouseX-SPOT_SIZE/2, mouseY-(SPOT_SIZE/2)*length, SPOT_SIZE, SPOT_SIZE*length);
+                    break;
+                case "horizontal":
+                    gc.fillRect(mouseX-(SPOT_SIZE/2)*length, mouseY-SPOT_SIZE/2, SPOT_SIZE*length, SPOT_SIZE);
+                    break;
             }
         }
     }
