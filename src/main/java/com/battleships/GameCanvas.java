@@ -127,15 +127,27 @@ public class GameCanvas extends Canvas {
             gc.setFill(Color.BROWN);
             int length = controller.getCurrentActivePlayer().getEquippedShip().getLength();
             String rotation = controller.getCurrentActivePlayer().getEquippedShip().getRotation();
+            int coordinateX = getSpotCoordinateX(mouseX);
+            int coordinateY = getSpotCoordinateY(mouseY);
             switch (rotation) {
                 case "vertical":
-                    gc.fillRect(mouseX-SPOT_SIZE/2, mouseY-(SPOT_SIZE/2)*length, SPOT_SIZE, SPOT_SIZE*length);
+                    gc.fillRect(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE, SPOT_SIZE*length);
                     break;
                 case "horizontal":
-                    gc.fillRect(mouseX-(SPOT_SIZE/2)*length, mouseY-SPOT_SIZE/2, SPOT_SIZE*length, SPOT_SIZE);
+                    gc.fillRect(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE*length, SPOT_SIZE);
                     break;
             }
         }
+    }
+
+    public int getSpotCoordinateX(double mouseX) {
+        int coordinate = (int) Math.floor(mouseX/SPOT_SIZE);
+        return coordinate;
+    }
+
+    public int getSpotCoordinateY(double mouseY) {
+        int coordinate = (int) Math.floor(mouseY/SPOT_SIZE);
+        return coordinate;
     }
 
     public GraphicsContext getGC() {
