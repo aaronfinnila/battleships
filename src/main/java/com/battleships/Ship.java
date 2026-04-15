@@ -3,12 +3,18 @@ package com.battleships;
 public class Ship {
     private final int length;
     private String rotation;
-    private boolean placed;
+    private boolean isPlaced;
+    private boolean isDestroyed;
 
     public Ship(int length) {
         this.length = length;
         rotation = "vertical";
-        placed = false;
+        isPlaced = false;
+        isDestroyed = false;
+    }
+
+    public boolean getDestroyed() {
+        return isDestroyed;
     }
 
     public String getRotation() {
@@ -24,11 +30,11 @@ public class Ship {
     }
 
     public boolean getPlaced() {
-        return placed;
+        return isPlaced;
     }
 
     public void setPlaced(boolean placed) {
-        this.placed = placed;
+        this.isPlaced = placed;
     }
 
 }

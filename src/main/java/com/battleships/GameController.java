@@ -50,7 +50,6 @@ public class GameController {
         if (player1.getShipsPlaced() == true && player2.getShipsPlaced() == true) {
             gameState = SHOOTSTATE;
         } else {
-            boolean changePlayer = false;
             String[][] waterSpots = currentActivePlayer.getWaterSpotsStatus();
             String shipRotation = currentActivePlayer.getEquippedShip().getRotation();
             int shipLength = currentActivePlayer.getEquippedShip().getLength();
@@ -68,14 +67,13 @@ public class GameController {
                     break;
             }
             currentShip.setPlaced(true);
-            currentShipIndex += 1;
-            currentActivePlayer.changeEquippedShip(currentShipIndex);
             if (allShipsPlaced() == true) {
                 currentActivePlayer.setShipsPlaced(true);
-                changePlayer = true;
-            }
-            if (changePlayer == true) {
                 currentActivePlayer = currentActivePlayer.equals(player1) ? player2 : player1;
+                currentShipIndex = 0;
+            } else {
+                currentShipIndex += 1;
+                currentActivePlayer.changeEquippedShip(currentShipIndex);
             }
         }
     }

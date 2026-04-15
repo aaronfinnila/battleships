@@ -126,7 +126,12 @@ public class UI {
         VBox leftVbox = new VBox(25);
         BorderPane.setMargin(leftVbox, new Insets(VBOX_TOP_MARGIN, 0, 0, 0));
         int shipSize = gameCanvas.SPOT_SIZE-3;
-        Label label = new Label("Enemy Ships:");
+        Label label = new Label("");
+        if (controller.getGameState() == controller.HIDESTATE) {
+            label.setText("Your ships:");
+        } else if (controller.getGameState() == controller.SHOOTSTATE) {
+            label.setText("Enemy ships:");
+        }
         label.setTranslateX(20);
         Rectangle ship1 = new Rectangle(shipSize, shipSize*2);
         ship1.setFill(Color.BROWN);
@@ -143,7 +148,6 @@ public class UI {
         leftVbox.setAlignment(Pos.TOP_RIGHT);
         leftVbox.setPrefWidth(190);
         borderPane.setLeft(leftVbox);
-        
     }
 
     public void setBorderPaneRight(BorderPane borderPane) {
