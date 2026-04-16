@@ -72,8 +72,12 @@ public class GameCanvas extends Canvas {
 
         if (!currentPlayer.equals(canvasActivePlayer)) {
             System.out.println("Player updated!");
-            ui.updateTurnLabel();
             canvasActivePlayer = currentPlayer;
+            ui.updateLabels();
+            ui.updateShips();
+            if (controller.getGameState() == controller.SHOOTSTATE) {
+                ui.updateRightPaneGrid();
+            }
         }
     }
 
@@ -101,7 +105,14 @@ public class GameCanvas extends Canvas {
                 offsetX+(x+1)*cellSize, offsetY+y*cellSize);
                 gc.strokeLine(offsetX+x*cellSize, offsetY+y*cellSize,
                 offsetX+x*cellSize, offsetY+(y+1)*cellSize);
-                String[][] waterSpots = controller.getCurrentActivePlayer().getWaterSpotsStatus();
+                String[][] waterSpots;
+                if (controller.getGameState() == controller.HIDESTATE) {
+                    waterSpots = controller.getCurrentActivePlayer().getWaterSpots();
+                } else {
+                    waterSpots = controller.getCurrentActivePlayer().equals(controller.getPlayer1())
+                     ? controller.getPlayer2().getWaterSpots()
+                     : controller.getPlayer1().getWaterSpots();
+                }
                 switch (waterSpots[(int) y][(int) x]) {
                     case "hit":
                         gc.setFill(Color.BLACK);
@@ -112,8 +123,10 @@ public class GameCanvas extends Canvas {
                         gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
                         break;
                     case "hidden":
-                        gc.setFill(Color.ORANGE);
-                        gc.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
+                        if (controller.getGameState() == controller.HIDESTATE) {
+                            gc.setFill(Color.ORANGE);
+                            gc.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
+                        }
                         break;
                 }
             }

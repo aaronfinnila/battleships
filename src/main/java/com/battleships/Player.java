@@ -7,7 +7,7 @@ public class Player {
     private int mana;
     // use this to track status of water spots. 
     // for example: hidden, empty, hit, miss
-    private String waterSpotsStatus[][];
+    private String waterSpots[][];
     private Ship ships[];
     private Ship equippedShip;
     private boolean shipsPlaced;
@@ -15,13 +15,13 @@ public class Player {
     public Player(String name) {
         this.name = name;
         mana = 0;
-        waterSpotsStatus = new String[15][15];
+        waterSpots = new String[15][15];
         ships = new Ship[] {new Ship(2), new Ship(2), new Ship(3), new Ship(4)};
         equippedShip = ships[0];
         shipsPlaced = false;
         for (int y = 0; y < 15; y++) {
             for (int x = 0; x < 15; x++) {
-                waterSpotsStatus[y][x] = "empty";
+                waterSpots[y][x] = "empty";
             }
         }
     }
@@ -54,8 +54,8 @@ public class Player {
         return name;
     }
 
-    public String[][] getWaterSpotsStatus() {
-        return waterSpotsStatus;
+    public String[][] getWaterSpots() {
+        return waterSpots;
     }
 
     public int getMana() {
