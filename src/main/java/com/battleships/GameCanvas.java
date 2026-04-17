@@ -76,7 +76,8 @@ public class GameCanvas extends Canvas {
             ui.updateLabels();
             ui.updateShips();
             if (controller.getGameState() == controller.SHOOTSTATE) {
-                ui.updateRightPaneGrid();
+                Player enemy = canvasActivePlayer.equals(controller.getPlayer1()) ? controller.getPlayer1() : controller.getPlayer2();
+                ui.updateRightPaneGrid(enemy.getWaterSpots());
             }
         }
     }

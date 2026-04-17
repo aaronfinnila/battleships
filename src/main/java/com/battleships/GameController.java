@@ -108,7 +108,8 @@ public class GameController {
     }
 
     public void handleShot(int x, int y) {
-        String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
+        Player enemy = getCurrentActivePlayer().equals(player1) ? player2 : player1;
+        String[][] waterSpots = enemy.getWaterSpots();
         String shotStatus = waterSpots[y][x];
         boolean changePlayer = false;
         switch (shotStatus) {
@@ -136,14 +137,16 @@ public class GameController {
     }
 
     public void handleShotMissed(int x, int y) {
-        String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
+        Player enemy = getCurrentActivePlayer().equals(player1) ? player2 : player1;
+        String[][] waterSpots = enemy.getWaterSpots();
         System.out.println("You missed at: " + x + " " + y);
         waterSpots[y][x] = "miss";
     }
 
     public void handleShotHit(int x, int y) {
-        String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
-        System.out.println("You hit a ship at: " + x + " " + y);
+        Player enemy = getCurrentActivePlayer().equals(player1) ? player2 : player1;
+        String[][] waterSpots = enemy.getWaterSpots();
+        System.out.println("You hit at: " + x + " " + y);
         waterSpots[y][x] = "hit";
     }
 }

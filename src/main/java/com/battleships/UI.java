@@ -199,13 +199,21 @@ public class UI {
         }
     }
     
-    public void updateRightPaneGrid() {
+    public void updateRightPaneGrid(String[][] waterSpots) {
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 15; col++) {
                 Rectangle cell = new Rectangle(10, 10);
                 cell.setStroke(Color.BLACK);
-                cell.setFill(Color.rgb(95, 162, 204));
-
+                switch (waterSpots[row][col]) {
+                    case "empty":
+                        cell.setFill(Color.rgb(95, 162, 204)); break;
+                    case "hidden":
+                        cell.setFill(Color.BROWN); break;
+                    case "hit":
+                        cell.setFill(Color.BLACK); break;
+                    case "miss":
+                        cell.setFill(Color.rgb(95, 162, 204)); break;
+                }
                 cells[row][col] = cell;
                 rightPaneGrid.add(cell, col, row);
             }
