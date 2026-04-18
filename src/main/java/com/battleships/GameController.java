@@ -55,6 +55,7 @@ public class GameController {
         if (player1.getShipsPlaced() == true && player2.getShipsPlaced() == true) {
             gameState = SHOOTSTATE;
         } else {
+            boolean allowHide = true;
             String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
             String shipRotation = getCurrentActivePlayer().getEquippedShip().getRotation();
             int shipLength = getCurrentActivePlayer().getEquippedShip().getLength();
@@ -62,25 +63,44 @@ public class GameController {
             switch (shipRotation) {
                 case "vertical":
                     for (int i = 0; i < shipLength; i++) {
-                        if (y+i < 15) {
-                            waterSpots[y+i][x] = "hidden";
+                        if (y+i > 15 || waterSpots[y+i][x] == "hidden") {
+                            allowHide = false;
+                            handleHideFalse();
+                            break;
                         }
                     }
-                    break;
+                    if (allowHide) {
+                        for (int i = 0; i < shipLength; i++) {
+                            if (y+i < 15) {
+                                waterSpots[y+i][x] = "hidden";
+                            }
+                        }
+                    } break;
+
                 case "horizontal":
                     for (int i = 0; i < shipLength; i++) {
-                        if (x+i < 15) {
-                            waterSpots[y][x+i] = "hidden";
+                        if (x+i > 15 || waterSpots[y][x+i] == "hidden") {
+                            allowHide = false;
+                            handleHideFalse();
+                            break;
                         }
                     }
-                    break;
+                    if (allowHide) {
+                        for (int i = 0; i < shipLength; i++) {
+                            if (x+i < 15) {
+                                waterSpots[y][x+i] = "hidden";
+                            }
+                        }
+                    } break;
             }
-            currentShip.setPlaced(true);
+            if (allowHide == true) {
+                currentShip.setPlaced(true);
+            }
             if (allShipsPlaced() == true) {
                 getCurrentActivePlayer().setShipsPlaced(true);
                 currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
                 currentShipIndex = 0;
-            } else {
+            } else if (currentShip.getPlaced()) {
                 currentShipIndex += 1;
                 getCurrentActivePlayer().changeEquippedShip(currentShipIndex);
             }
@@ -91,7 +111,7 @@ public class GameController {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Info");
         alert.setHeaderText(null);
-        alert.setContentText("You can't shoot there!");
+        alert.setContentText("You can't place there!");
 
         alert.showAndWait();
     }

@@ -152,7 +152,7 @@ public class UI {
     }
 
     public void setBorderPaneRight(BorderPane borderPane) {
-        VBox rightVbox = new VBox(200);
+        VBox rightVbox = new VBox(315);
         BorderPane.setMargin(rightVbox, new Insets(VBOX_TOP_MARGIN, 0, 0, 0));
         Label label = new Label("Abilities:");
         
@@ -212,7 +212,7 @@ public class UI {
                     case "hit":
                         cell.setFill(Color.BLACK); break;
                     case "miss":
-                        cell.setFill(Color.rgb(95, 162, 204)); break;
+                        cell.setFill(Color.rgb(18, 100, 201)); break;
                 }
                 cells[row][col] = cell;
                 rightPaneGrid.add(cell, col, row);
