@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -34,8 +35,10 @@ public class UI {
     private Label turnLabel;
     private Label leftPaneLabel;
     private Ship[] leftPaneShips;
-    private GridPane rightPaneGrid = new GridPane();
-    private Rectangle[][] cells = new Rectangle[15][15];
+    private Rectangle[] leftPaneRects;
+    private GridPane rightPaneGrid;
+    private Rectangle[][] cells;
+    private Rectangle[] botPaneRects;
     public int shipRow;
 
     public UI(Stage stage, GameController controller) {
@@ -45,7 +48,12 @@ public class UI {
     }
     
     private void initialize() {
+        rightPaneGrid = new GridPane();
         leftPaneShips = new Ship[] {new Ship(2), new Ship(2), new Ship(3), new Ship(4)};
+        cells = new Rectangle[15][15];
+        leftPaneRects = new Rectangle[] {new Rectangle(), new Rectangle(), new Rectangle(), new Rectangle()};
+        botPaneRects = new Rectangle[10];
+
         root = new StackPane();
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
         keyHandler = new KeyHandler(controller, this);
@@ -122,6 +130,7 @@ public class UI {
     public BorderPane createGameViewPane() {
         BorderPane borderPane = new BorderPane();
         setBorderPaneCenter(borderPane);
+        setBorderPaneBottom(borderPane);
         setBorderPaneTop(borderPane);
         setBorderPaneLeft(borderPane);
         setBorderPaneRight(borderPane);
@@ -134,18 +143,11 @@ public class UI {
         BorderPane.setMargin(leftVbox, new Insets(VBOX_TOP_MARGIN, 0, 0, 0));
         leftPaneLabel = new Label("");
         leftPaneLabel.setTranslateX(20);
-        Rectangle ship1 = new Rectangle();
-        setLeftPaneShip(ship1, 0);
-        Rectangle ship2 = new Rectangle();
-        setLeftPaneShip(ship2, 1);
-        Rectangle ship3 = new Rectangle();
-        setLeftPaneShip(ship3, 2);
-        Rectangle ship4 = new Rectangle();
-        setLeftPaneShip(ship4, 3);
-        leftVbox.getChildren().addAll(
-            leftPaneLabel,
-            ship1, ship2, ship3, ship4
-        );
+        leftVbox.getChildren().add(leftPaneLabel);
+        for (int i = 0; i < leftPaneRects.length; i++) {
+            setLeftPaneShip(leftPaneRects[i], i);
+            leftVbox.getChildren().add(leftPaneRects[i]);
+        }
         leftVbox.setAlignment(Pos.TOP_RIGHT);
         leftVbox.setPrefWidth(190);
         borderPane.setLeft(leftVbox);
@@ -174,6 +176,42 @@ public class UI {
         borderPane.setTop(topVbox);
     }
 
+    public void setBorderPaneBottom(BorderPane borderPane) {
+        VBox botVbox = new VBox(50);
+        HBox manaHbox = new HBox(0);
+        HBox abilityHbox = new HBox(30);
+        BorderPane.setMargin(manaHbox, new Insets(0, 0, 90, 0));
+        for (int i = 0; i < botPaneRects.length; i++) {
+            botPaneRects[i] = new Rectangle(40, 25);
+            manaHbox.getChildren().add(botPaneRects[i]);
+        }
+        manaHbox.setAlignment(Pos.CENTER);
+
+        Button ability1 = new Button("mine");
+        ability1.setOnAction(event -> {
+            System.out.println("pressed ability mine");
+            controller.getCurrentActivePlayer().subtractMana(1);
+            updateMana();
+        });
+        Button ability2 = new Button("radar");
+        ability2.setOnAction(event -> {
+            System.out.println("pressed ability radar");
+            controller.getCurrentActivePlayer().subtractMana(3);
+            updateMana();
+        });
+        Button ability3 = new Button("mortar");
+        ability3.setOnAction(event -> {
+            System.out.println("pressed ability mortar");
+            controller.getCurrentActivePlayer().subtractMana(5);
+            updateMana();
+        });
+        abilityHbox.getChildren().addAll(ability1, ability2, ability3);
+        abilityHbox.setAlignment(Pos.CENTER);
+
+        botVbox.getChildren().addAll(manaHbox, abilityHbox);
+        borderPane.setBottom(botVbox);
+    }
+
     public void setBorderPaneCenter(BorderPane borderPane) {
         gameCanvas = new GameCanvas(525, 525, controller, this);
         borderPane.setCenter(gameCanvas);
@@ -192,10 +230,27 @@ public class UI {
         if (controller.getGameState() == controller.HIDESTATE) {
             leftPaneShips = controller.getCurrentActivePlayer().getShips();
         } else {
-            System.out.println("update leftpaneships");
             leftPaneShips = controller.getCurrentActivePlayer().equals(controller.getPlayer1())
              ? controller.getPlayer2().getShips() 
              : controller.getPlayer1().getShips();
+        }
+        for (int i = 0; i < leftPaneShips.length; i++) {
+            if (leftPaneShips[i].isDestroyed() == false) {
+                leftPaneRects[i].setFill(Color.BROWN);
+            } else {
+                leftPaneRects[i].setFill(Color.BLACK);
+            }
+        }
+    }
+
+    public void updateMana() {
+        for (int i = 0; i < Player.MAX_MANA; i++) {
+            if (i < controller.getCurrentActivePlayer().getMana()) {
+                botPaneRects[i].setFill(Color.BLUE);
+            } else {
+                botPaneRects[i].setFill(Color.BLACK);
+            }
+            botPaneRects[i].setStroke(Color.BLACK);
         }
     }
     
@@ -225,12 +280,6 @@ public class UI {
         Ship ship = leftPaneShips[index];
         shipRect.setHeight(ship.getLength()*shipSize);
         shipRect.setWidth(shipSize);
-        System.out.println(ship.getDestroyed());
-        if (ship.getDestroyed() == false) {
-            shipRect.setFill(Color.BROWN);
-        } else {
-            shipRect.setFill(Color.BLACK);
-        }
     }
 
     public GameCanvas getGameCanvas() {

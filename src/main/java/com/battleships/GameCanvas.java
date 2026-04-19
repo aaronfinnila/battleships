@@ -71,13 +71,13 @@ public class GameCanvas extends Canvas {
         Player currentPlayer = controller.getCurrentActivePlayer();
 
         if (!currentPlayer.equals(canvasActivePlayer)) {
-            System.out.println("Player updated!");
             canvasActivePlayer = currentPlayer;
             ui.updateLabels();
             ui.updateShips();
             if (controller.getGameState() == controller.SHOOTSTATE) {
                 Player enemy = canvasActivePlayer.equals(controller.getPlayer1()) ? controller.getPlayer1() : controller.getPlayer2();
                 ui.updateRightPaneGrid(enemy.getWaterSpots());
+                ui.updateMana();
             }
         }
     }

@@ -42,68 +42,67 @@ public class GameController {
     }
 
     public void handleClick(int x, int y) {
-        System.out.println(gameState);
         if (gameState == HIDESTATE) {
             handleHide(x, y);
-        }
-        if (gameState == SHOOTSTATE) {
+        } else {
             handleShot(x, y);
         }
     }
 
     public void handleHide(int x, int y) {
-        if (player1.getShipsPlaced() == true && player2.getShipsPlaced() == true) {
-            gameState = SHOOTSTATE;
-        } else {
-            boolean allowHide = true;
-            String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
-            String shipRotation = getCurrentActivePlayer().getEquippedShip().getRotation();
-            int shipLength = getCurrentActivePlayer().getEquippedShip().getLength();
-            Ship currentShip = getCurrentActivePlayer().getEquippedShip();
-            switch (shipRotation) {
-                case "vertical":
+        boolean allowHide = true;
+        String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
+        String shipRotation = getCurrentActivePlayer().getEquippedShip().getRotation();
+        int shipLength = getCurrentActivePlayer().getEquippedShip().getLength();
+        Ship currentShip = getCurrentActivePlayer().getEquippedShip();
+        switch (shipRotation) {
+            case "vertical":
+                for (int i = 0; i < shipLength; i++) {
+                    if (y+i > 15 || waterSpots[y+i][x] == "hidden") {
+                        allowHide = false;
+                        handleHideFalse();
+                        break;
+                    }
+                }
+                if (allowHide) {
                     for (int i = 0; i < shipLength; i++) {
-                        if (y+i > 15 || waterSpots[y+i][x] == "hidden") {
-                            allowHide = false;
-                            handleHideFalse();
-                            break;
+                        if (y+i < 15) {
+                            waterSpots[y+i][x] = "hidden";
                         }
                     }
-                    if (allowHide) {
-                        for (int i = 0; i < shipLength; i++) {
-                            if (y+i < 15) {
-                                waterSpots[y+i][x] = "hidden";
-                            }
-                        }
-                    } break;
+                } break;
 
-                case "horizontal":
+            case "horizontal":
+                for (int i = 0; i < shipLength; i++) {
+                    if (x+i > 15 || waterSpots[y][x+i] == "hidden") {
+                        allowHide = false;
+                        handleHideFalse();
+                        break;
+                    }
+                }
+                if (allowHide) {
                     for (int i = 0; i < shipLength; i++) {
-                        if (x+i > 15 || waterSpots[y][x+i] == "hidden") {
-                            allowHide = false;
-                            handleHideFalse();
-                            break;
+                        if (x+i < 15) {
+                            waterSpots[y][x+i] = "hidden";
                         }
                     }
-                    if (allowHide) {
-                        for (int i = 0; i < shipLength; i++) {
-                            if (x+i < 15) {
-                                waterSpots[y][x+i] = "hidden";
-                            }
-                        }
-                    } break;
-            }
-            if (allowHide == true) {
-                currentShip.setPlaced(true);
-            }
-            if (allShipsPlaced() == true) {
-                getCurrentActivePlayer().setShipsPlaced(true);
-                currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
-                currentShipIndex = 0;
-            } else if (currentShip.getPlaced()) {
-                currentShipIndex += 1;
-                getCurrentActivePlayer().changeEquippedShip(currentShipIndex);
-            }
+                } break;
+        }
+        if (allowHide == true) {
+            currentShip.setPlaced(true);
+            currentShip.setPositionX(x);
+            currentShip.setPositionY(y);
+        }
+        if (activeShipsPlaced() == true) {
+            getCurrentActivePlayer().setShipsPlaced(true);
+            currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
+            currentShipIndex = 0;
+        } else if (currentShip.isPlaced()) {
+            currentShipIndex += 1;
+            getCurrentActivePlayer().changeEquippedShip(currentShipIndex);
+        }
+        if (player1.getShipsPlaced() == true && player2.getShipsPlaced() == true) {
+        gameState = SHOOTSTATE;
         }
     }
     
@@ -116,11 +115,11 @@ public class GameController {
         alert.showAndWait();
     }
 
-    public boolean allShipsPlaced() {
+    public boolean activeShipsPlaced() {
         boolean allPlaced = true;
         Ship[] ships = getCurrentActivePlayer().getShips();
         for (int i = 0; i < ships.length; i++) {
-            if (ships[i].getPlaced() == false) {
+            if (ships[i].isPlaced() == false) {
                 allPlaced = false;
             }
         }
@@ -143,6 +142,7 @@ public class GameController {
                 handleShotFalse(); break;
         }
         if (changePlayer == true) {
+            getCurrentActivePlayer().addMana(1);
             currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
         }
     }
@@ -168,5 +168,7 @@ public class GameController {
         String[][] waterSpots = enemy.getWaterSpots();
         System.out.println("You hit at: " + x + " " + y);
         waterSpots[y][x] = "hit";
+        enemy.checkDestroyedShips();
+        enemy.addMana(1);
     }
 }
