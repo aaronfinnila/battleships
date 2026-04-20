@@ -190,18 +190,21 @@ public class UI {
         Button ability1 = new Button("mine");
         ability1.setOnAction(event -> {
             System.out.println("pressed ability mine");
+            controller.handleMine();
             controller.getCurrentActivePlayer().subtractMana(1);
             updateMana();
         });
         Button ability2 = new Button("radar");
         ability2.setOnAction(event -> {
             System.out.println("pressed ability radar");
+            controller.handleRadar();
             controller.getCurrentActivePlayer().subtractMana(3);
             updateMana();
         });
         Button ability3 = new Button("mortar");
         ability3.setOnAction(event -> {
             System.out.println("pressed ability mortar");
+            controller.handleMortar();
             controller.getCurrentActivePlayer().subtractMana(5);
             updateMana();
         });

@@ -171,4 +171,16 @@ public class GameController {
         enemy.checkDestroyedShips();
         enemy.addMana(1);
     }
+
+    public void handleMine() {
+
+    }
+
+    public void handleRadar() {
+        
+    }
+
+    public void handleMortar() {
+
+    }
 }

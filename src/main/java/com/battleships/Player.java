@@ -7,7 +7,6 @@ public class Player {
     private int mana;
     // use this to track status of water spots. 
     // values: hidden, empty, hit, miss
-    // TODO: UI setborderpanebottom: mana bar, ability buttons.
     // TODO: gamecontroller: hiding mines, radar handleSpot (3x3) (can use handleShot with if statement), mortar abilities (handleShot on 3x3, etc)
     private String waterSpots[][];
     private Ship ships[];
