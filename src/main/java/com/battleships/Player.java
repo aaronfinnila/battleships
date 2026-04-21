@@ -6,12 +6,13 @@ public class Player {
     private String name;
     private int mana;
     // use this to track status of water spots. 
-    // values: hidden, empty, hit, miss
-    // TODO: gamecontroller: hiding mines, radar handleSpot (3x3) (can use handleShot with if statement), mortar abilities (handleShot on 3x3, etc)
+    // values: hidden, empty, hit, miss, mine
+    // TODO: radar handleSpot (3x3) (can use handleShot with if statement), mortar abilities (handleShot on 3x3, etc)
     private String waterSpots[][];
     private Ship ships[];
     private Ship equippedShip;
     private boolean shipsPlaced;
+    private boolean hideMine;
 
     public Player(String name) {
         this.name = name;
@@ -20,6 +21,7 @@ public class Player {
         ships = new Ship[] {new Ship(2), new Ship(2), new Ship(3), new Ship(4)};
         equippedShip = ships[0];
         shipsPlaced = false;
+        hideMine = false;
         for (int y = 0; y < 15; y++) {
             for (int x = 0; x < 15; x++) {
                 waterSpots[y][x] = "empty";
@@ -81,6 +83,14 @@ public class Player {
 
     public String getName() {
         return name;
+    }
+
+    public boolean getHideMine() {
+        return hideMine;
+    }
+
+    public void setHideMine(boolean hideMine) {
+        this.hideMine = hideMine;
     }
 
     public String[][] getWaterSpots() {

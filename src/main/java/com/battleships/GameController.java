@@ -1,5 +1,7 @@
 package com.battleships;
 
+import java.util.Random;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
@@ -37,6 +39,10 @@ public class GameController {
         }
     }
 
+    public void switchCurrentActivePlayer() {
+        currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
+    }
+
     public int getGameState() {
         return gameState;
     }
@@ -50,59 +56,79 @@ public class GameController {
     }
 
     public void handleHide(int x, int y) {
-        boolean allowHide = true;
-        String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
-        String shipRotation = getCurrentActivePlayer().getEquippedShip().getRotation();
-        int shipLength = getCurrentActivePlayer().getEquippedShip().getLength();
-        Ship currentShip = getCurrentActivePlayer().getEquippedShip();
-        switch (shipRotation) {
-            case "vertical":
-                for (int i = 0; i < shipLength; i++) {
-                    if (y+i > 15 || waterSpots[y+i][x] == "hidden") {
-                        allowHide = false;
-                        handleHideFalse();
-                        break;
-                    }
-                }
-                if (allowHide) {
+        if (getCurrentActivePlayer().getHideMine() == true) {
+            String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
+            boolean minePlaced = false;
+            switch (waterSpots[y][x]) {
+                case "hidden":
+                    handleHideFalse(); break;
+                case "empty":
+                    waterSpots[y][x] = "mine"; minePlaced = true; break;
+                case "hit":
+                    handleHideFalse(); break;
+                case "miss":
+                    handleHideFalse(); break;
+                case "mine":
+                    handleHideFalse(); break;
+            }
+            if (minePlaced == true) {
+                gameState = SHOOTSTATE;
+            }
+        } else {
+            boolean allowHide = true;
+            String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
+            String shipRotation = getCurrentActivePlayer().getEquippedShip().getRotation();
+            int shipLength = getCurrentActivePlayer().getEquippedShip().getLength();
+            Ship currentShip = getCurrentActivePlayer().getEquippedShip();
+            switch (shipRotation) {
+                case "vertical":
                     for (int i = 0; i < shipLength; i++) {
-                        if (y+i < 15) {
-                            waterSpots[y+i][x] = "hidden";
+                        if (y+i > 15 || waterSpots[y+i][x] == "hidden") {
+                            allowHide = false;
+                            handleHideFalse();
+                            break;
                         }
                     }
-                } break;
-
-            case "horizontal":
-                for (int i = 0; i < shipLength; i++) {
-                    if (x+i > 15 || waterSpots[y][x+i] == "hidden") {
-                        allowHide = false;
-                        handleHideFalse();
-                        break;
-                    }
-                }
-                if (allowHide) {
+                    if (allowHide) {
+                        for (int i = 0; i < shipLength; i++) {
+                            if (y+i < 15) {
+                                waterSpots[y+i][x] = "hidden";
+                            }
+                        }
+                    } break;
+    
+                case "horizontal":
                     for (int i = 0; i < shipLength; i++) {
-                        if (x+i < 15) {
-                            waterSpots[y][x+i] = "hidden";
+                        if (x+i > 15 || waterSpots[y][x+i] == "hidden") {
+                            allowHide = false;
+                            handleHideFalse();
+                            break;
                         }
                     }
-                } break;
-        }
-        if (allowHide == true) {
-            currentShip.setPlaced(true);
-            currentShip.setPositionX(x);
-            currentShip.setPositionY(y);
-        }
-        if (activeShipsPlaced() == true) {
-            getCurrentActivePlayer().setShipsPlaced(true);
-            currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
-            currentShipIndex = 0;
-        } else if (currentShip.isPlaced()) {
-            currentShipIndex += 1;
-            getCurrentActivePlayer().changeEquippedShip(currentShipIndex);
-        }
-        if (player1.getShipsPlaced() == true && player2.getShipsPlaced() == true) {
-        gameState = SHOOTSTATE;
+                    if (allowHide) {
+                        for (int i = 0; i < shipLength; i++) {
+                            if (x+i < 15) {
+                                waterSpots[y][x+i] = "hidden";
+                            }
+                        }
+                    } break;
+            }
+            if (allowHide == true) {
+                currentShip.setPlaced(true);
+                currentShip.setPositionX(x);
+                currentShip.setPositionY(y);
+            }
+            if (activeShipsPlaced() == true) {
+                getCurrentActivePlayer().setShipsPlaced(true);
+                currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
+                currentShipIndex = 0;
+            } else if (currentShip.isPlaced()) {
+                currentShipIndex += 1;
+                getCurrentActivePlayer().changeEquippedShip(currentShipIndex);
+            }
+            if (player1.getShipsPlaced() == true && player2.getShipsPlaced() == true) {
+            gameState = SHOOTSTATE;
+            }
         }
     }
     
@@ -127,7 +153,7 @@ public class GameController {
     }
 
     public void handleShot(int x, int y) {
-        Player enemy = getCurrentActivePlayer().equals(player1) ? player2 : player1;
+        Player enemy = getCurrentEnemy();
         String[][] waterSpots = enemy.getWaterSpots();
         String shotStatus = waterSpots[y][x];
         boolean changePlayer = false;
@@ -140,6 +166,8 @@ public class GameController {
                 handleShotFalse(); break;
             case "miss":
                 handleShotFalse(); break;
+            case "mine":
+                handleShotMine(); break;
         }
         if (changePlayer == true) {
             getCurrentActivePlayer().addMana(1);
@@ -157,14 +185,31 @@ public class GameController {
     }
 
     public void handleShotMissed(int x, int y) {
-        Player enemy = getCurrentActivePlayer().equals(player1) ? player2 : player1;
+        Player enemy = getCurrentEnemy();
         String[][] waterSpots = enemy.getWaterSpots();
         System.out.println("You missed at: " + x + " " + y);
         waterSpots[y][x] = "miss";
     }
 
+    public void handleShotMine() {
+        Random random = new Random();
+        String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
+        switchCurrentActivePlayer();
+        for (int i = 0; i < 3; i++) {
+            int y = random.nextInt(0, 15);
+            int x = random.nextInt(0, 15);
+            if (waterSpots[y][x] == "") {
+                i--;
+                System.out.println(i);
+                continue;
+            }
+            handleMineShot(x, y);
+        }
+        switchCurrentActivePlayer();
+    }
+
     public void handleShotHit(int x, int y) {
-        Player enemy = getCurrentActivePlayer().equals(player1) ? player2 : player1;
+        Player enemy = getCurrentEnemy();
         String[][] waterSpots = enemy.getWaterSpots();
         System.out.println("You hit at: " + x + " " + y);
         waterSpots[y][x] = "hit";
@@ -172,8 +217,14 @@ public class GameController {
         enemy.addMana(1);
     }
 
-    public void handleMine() {
+    public Player getCurrentEnemy() {
+        Player enemy = getCurrentActivePlayer().equals(player1) ? player2 : player1;
+        return enemy;
+    }
 
+    public void handleMine() {
+        getCurrentActivePlayer().setHideMine(true);
+        gameState = HIDESTATE;
     }
 
     public void handleRadar() {

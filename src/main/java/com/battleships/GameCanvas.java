@@ -127,8 +127,12 @@ public class GameCanvas extends Canvas {
                         if (controller.getGameState() == controller.HIDESTATE) {
                             gc.setFill(Color.ORANGE);
                             gc.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
+                        } break;
+                    case "mine":
+                        if (controller.getGameState() == controller.HIDESTATE) {
+                            gc.setFill(Color.rgb(25, 37, 46));
+                            gc.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
                         }
-                        break;
                 }
             }
         }
@@ -138,18 +142,25 @@ public class GameCanvas extends Canvas {
                 mouseX = event.getX();
                 mouseY = event.getY();
             });
-            gc.setFill(Color.BROWN);
-            int length = controller.getCurrentActivePlayer().getEquippedShip().getLength();
-            String rotation = controller.getCurrentActivePlayer().getEquippedShip().getRotation();
             int coordinateX = getSpotCoordinateX(mouseX);
             int coordinateY = getSpotCoordinateY(mouseY);
-            switch (rotation) {
-                case "vertical":
-                    gc.fillRect(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE, SPOT_SIZE*length);
-                    break;
-                case "horizontal":
-                    gc.fillRect(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE*length, SPOT_SIZE);
-                    break;
+
+            if (controller.getCurrentActivePlayer().getHideMine() == true) {
+                gc.setFill(Color.rgb(40, 58, 72));
+                gc.fillRect(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE, SPOT_SIZE);
+            } else {
+                int length = controller.getCurrentActivePlayer().getEquippedShip().getLength();
+                String rotation = controller.getCurrentActivePlayer().getEquippedShip().getRotation();
+                gc.setFill(Color.BROWN);
+                switch (rotation) {
+                    case "vertical":
+                        gc.fillRect(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE, SPOT_SIZE*length);
+                        break;
+                    case "horizontal":
+                        gc.fillRect(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE*length, SPOT_SIZE);
+                        break;
+                }
+                
             }
         }
     }

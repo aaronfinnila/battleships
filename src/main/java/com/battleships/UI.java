@@ -271,6 +271,8 @@ public class UI {
                         cell.setFill(Color.BLACK); break;
                     case "miss":
                         cell.setFill(Color.rgb(18, 100, 201)); break;
+                    case "mine":
+                        cell.setFill(Color.rgb(40, 58, 72)); break;
                 }
                 cells[row][col] = cell;
                 rightPaneGrid.add(cell, col, row);
