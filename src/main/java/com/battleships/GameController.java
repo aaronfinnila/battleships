@@ -4,6 +4,8 @@ import java.util.Random;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 
 public class GameController {
     
@@ -61,15 +63,15 @@ public class GameController {
             boolean minePlaced = false;
             switch (waterSpots[y][x]) {
                 case "hidden":
-                    handleHideFalse(); break;
+                    falseMoveAlert("You can't place there!"); break;
                 case "empty":
                     waterSpots[y][x] = "mine"; minePlaced = true; break;
                 case "hit":
-                    handleHideFalse(); break;
+                    falseMoveAlert("You can't place there!"); break;
                 case "miss":
-                    handleHideFalse(); break;
+                    falseMoveAlert("You can't place there!"); break;
                 case "mine":
-                    handleHideFalse(); break;
+                    falseMoveAlert("You can't place there!"); break;
             }
             if (minePlaced == true) {
                 gameState = SHOOTSTATE;
@@ -85,7 +87,7 @@ public class GameController {
                     for (int i = 0; i < shipLength; i++) {
                         if (y+i > 15 || waterSpots[y+i][x] == "hidden") {
                             allowHide = false;
-                            handleHideFalse();
+                            falseMoveAlert("You can't place there!");
                             break;
                         }
                     }
@@ -101,7 +103,7 @@ public class GameController {
                     for (int i = 0; i < shipLength; i++) {
                         if (x+i > 15 || waterSpots[y][x+i] == "hidden") {
                             allowHide = false;
-                            handleHideFalse();
+                            falseMoveAlert("You can't place there!");
                             break;
                         }
                     }
@@ -120,7 +122,7 @@ public class GameController {
             }
             if (activeShipsPlaced() == true) {
                 getCurrentActivePlayer().setShipsPlaced(true);
-                currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
+                switchCurrentActivePlayer();
                 currentShipIndex = 0;
             } else if (currentShip.isPlaced()) {
                 currentShipIndex += 1;
@@ -132,12 +134,11 @@ public class GameController {
         }
     }
     
-    public void handleHideFalse() {
+    public void falseMoveAlert(String text) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Info");
         alert.setHeaderText(null);
-        alert.setContentText("You can't place there!");
-
+        alert.setContentText(text);
         alert.showAndWait();
     }
 
@@ -163,55 +164,57 @@ public class GameController {
             case "hidden":
                 handleShotHit(x, y); changePlayer = true; break;
             case "hit":
-                handleShotFalse(); break;
+                falseMoveAlert("You can't shoot there!"); break;
             case "miss":
-                handleShotFalse(); break;
+                falseMoveAlert("You can't shoot there!"); break;
             case "mine":
-                handleShotMine(); break;
+                handleShotMine(x, y); changePlayer = true; break;
         }
         if (changePlayer == true) {
             getCurrentActivePlayer().addMana(1);
-            currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
+            switchCurrentActivePlayer();
         }
-    }
-
-    public void handleShotFalse() {
-        Alert alert = new Alert(AlertType.INFORMATION);
-        alert.setTitle("Info");
-        alert.setHeaderText(null);
-        alert.setContentText("You can't shoot there!");
-
-        alert.showAndWait();
     }
 
     public void handleShotMissed(int x, int y) {
+        nextTurnAlert("You missed!");
         Player enemy = getCurrentEnemy();
         String[][] waterSpots = enemy.getWaterSpots();
-        System.out.println("You missed at: " + x + " " + y);
         waterSpots[y][x] = "miss";
     }
 
-    public void handleShotMine() {
+    public void handleShotMine(int x, int y) {
+        nextTurnAlert("You shot a mine!");
         Random random = new Random();
         String[][] waterSpots = getCurrentActivePlayer().getWaterSpots();
-        switchCurrentActivePlayer();
+        String[][] enemyWaterSpots = getCurrentEnemy().getWaterSpots();
+        enemyWaterSpots[y][x] = "miss";
         for (int i = 0; i < 3; i++) {
-            int y = random.nextInt(0, 15);
-            int x = random.nextInt(0, 15);
-            if (waterSpots[y][x] == "") {
-                i--;
-                System.out.println(i);
-                continue;
+            int row = random.nextInt(0, 15);
+            int col = random.nextInt(0, 15);
+            switch (waterSpots[row][col]) {
+                case "hidden":
+                    waterSpots[row][col] = "hit";
+                    getCurrentActivePlayer().checkDestroyedShips();
+                    getCurrentActivePlayer().addMana(1);
+                    break;
+                case "empty":
+                    waterSpots[row][col] = "miss";
+                    break;
+                case "mine":
+                    System.out.println("shots from a mine hit a mine!");
+                    switchCurrentActivePlayer();
+                    handleShotMine(col, row);
+                    switchCurrentActivePlayer();
+                    break;
             }
-            handleMineShot(x, y);
         }
-        switchCurrentActivePlayer();
     }
 
     public void handleShotHit(int x, int y) {
+        nextTurnAlert("You hit a ship!");
         Player enemy = getCurrentEnemy();
         String[][] waterSpots = enemy.getWaterSpots();
-        System.out.println("You hit at: " + x + " " + y);
         waterSpots[y][x] = "hit";
         enemy.checkDestroyedShips();
         enemy.addMana(1);
@@ -222,16 +225,27 @@ public class GameController {
         return enemy;
     }
 
-    public void handleMine() {
+    public void nextTurnAlert(String text) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText(null);
+        alert.setContentText(text);
+        Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setText("Next turn");
+        alert.showAndWait();
+    }
+
+    public void handlePlaceMine() {
         getCurrentActivePlayer().setHideMine(true);
+        getCurrentActivePlayer().subtractMana(1);
         gameState = HIDESTATE;
     }
 
     public void handleRadar() {
-        
+        getCurrentActivePlayer().subtractMana(3);
     }
 
     public void handleMortar() {
-
+        getCurrentActivePlayer().subtractMana(5);
     }
 }

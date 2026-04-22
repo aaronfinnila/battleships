@@ -156,7 +156,7 @@ public class UI {
     public void setBorderPaneRight(BorderPane borderPane) {
         VBox rightVbox = new VBox(315);
         BorderPane.setMargin(rightVbox, new Insets(VBOX_TOP_MARGIN, 0, 0, 0));
-        Label label = new Label("Abilities:");
+        Label label = new Label("");
         
         rightVbox.getChildren().add(label);
         rightVbox.getChildren().add(rightPaneGrid);
@@ -189,24 +189,30 @@ public class UI {
 
         Button ability1 = new Button("mine");
         ability1.setOnAction(event -> {
-            System.out.println("pressed ability mine");
-            controller.handleMine();
-            controller.getCurrentActivePlayer().subtractMana(1);
-            updateMana();
+            if (controller.getCurrentActivePlayer().getMana() >= 1) {
+                controller.handlePlaceMine();
+                updateMana();
+            } else {
+                controller.falseMoveAlert("Not enough mana!");
+            }
         });
         Button ability2 = new Button("radar");
         ability2.setOnAction(event -> {
-            System.out.println("pressed ability radar");
-            controller.handleRadar();
-            controller.getCurrentActivePlayer().subtractMana(3);
-            updateMana();
+            if (controller.getCurrentActivePlayer().getMana() >= 3) {
+                controller.handleRadar();
+                updateMana();
+            } else {
+                controller.falseMoveAlert("Not enough mana!");
+            }
         });
         Button ability3 = new Button("mortar");
         ability3.setOnAction(event -> {
-            System.out.println("pressed ability mortar");
-            controller.handleMortar();
-            controller.getCurrentActivePlayer().subtractMana(5);
-            updateMana();
+            if (controller.getCurrentActivePlayer().getMana() >= 5) {
+                controller.handleMortar();
+                updateMana();
+            } else {
+                controller.falseMoveAlert("Not enough mana!");
+            }
         });
         abilityHbox.getChildren().addAll(ability1, ability2, ability3);
         abilityHbox.setAlignment(Pos.CENTER);

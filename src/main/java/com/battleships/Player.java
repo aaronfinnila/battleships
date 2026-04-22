@@ -110,7 +110,6 @@ public class Player {
     public void subtractMana(int amount) {
         if (mana - amount >= 0) {
             mana -= amount;
-            System.out.println(mana);
         }
     }
 }
