@@ -13,6 +13,7 @@ public class Player {
     private Ship equippedShip;
     private boolean shipsPlaced;
     private boolean hideMine;
+    private boolean shootMortar;
 
     public Player(String name) {
         this.name = name;
@@ -91,6 +92,14 @@ public class Player {
 
     public void setHideMine(boolean hideMine) {
         this.hideMine = hideMine;
+    }
+
+    public boolean getShootMortar() {
+        return shootMortar;
+    }
+
+    public void setShootMortar(boolean shootMortar) {
+        this.shootMortar = shootMortar;
     }
 
     public String[][] getWaterSpots() {

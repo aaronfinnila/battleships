@@ -189,29 +189,36 @@ public class UI {
 
         Button ability1 = new Button("mine");
         ability1.setOnAction(event -> {
-            if (controller.getCurrentActivePlayer().getMana() >= 1) {
-                controller.handlePlaceMine();
-                updateMana();
-            } else {
-                controller.falseMoveAlert("Not enough mana!");
+            if (controller.getGameState() == controller.SHOOTSTATE) {
+                if (controller.getCurrentActivePlayer().getMana() >= 1) {
+                    controller.handlePlaceMine();
+                    updateMana();
+                } else {
+                    controller.falseMoveAlert("Not enough mana!");
+                }
             }
         });
         Button ability2 = new Button("radar");
         ability2.setOnAction(event -> {
-            if (controller.getCurrentActivePlayer().getMana() >= 3) {
-                controller.handleRadar();
-                updateMana();
-            } else {
-                controller.falseMoveAlert("Not enough mana!");
+            if (controller.getGameState() == controller.SHOOTSTATE) {
+                if (controller.getCurrentActivePlayer().getMana() >= 3) {
+                    controller.handleRadar();
+                    updateMana();
+                } else {
+                    controller.falseMoveAlert("Not enough mana!");
+                }
             }
         });
         Button ability3 = new Button("mortar");
         ability3.setOnAction(event -> {
-            if (controller.getCurrentActivePlayer().getMana() >= 5) {
-                controller.handleMortar();
-                updateMana();
-            } else {
-                controller.falseMoveAlert("Not enough mana!");
+            if (controller.getGameState() == controller.SHOOTSTATE) {
+
+                if (controller.getCurrentActivePlayer().getMana() >= 5) {
+                    controller.handlePlaceMortar();
+                    updateMana();
+                } else {
+                    controller.falseMoveAlert("Not enough mana!");
+                }
             }
         });
         abilityHbox.getChildren().addAll(ability1, ability2, ability3);

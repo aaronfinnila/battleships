@@ -85,7 +85,7 @@ public class GameController {
             switch (shipRotation) {
                 case "vertical":
                     for (int i = 0; i < shipLength; i++) {
-                        if (y+i > 15 || waterSpots[y+i][x] == "hidden") {
+                        if (y+i >= 15 || waterSpots[y+i][x] == "hidden") {
                             allowHide = false;
                             falseMoveAlert("You can't place there!");
                             break;
@@ -101,7 +101,7 @@ public class GameController {
     
                 case "horizontal":
                     for (int i = 0; i < shipLength; i++) {
-                        if (x+i > 15 || waterSpots[y][x+i] == "hidden") {
+                        if (x+i >= 15 || waterSpots[y][x+i] == "hidden") {
                             allowHide = false;
                             falseMoveAlert("You can't place there!");
                             break;
@@ -154,25 +154,29 @@ public class GameController {
     }
 
     public void handleShot(int x, int y) {
-        Player enemy = getCurrentEnemy();
-        String[][] waterSpots = enemy.getWaterSpots();
-        String shotStatus = waterSpots[y][x];
-        boolean changePlayer = false;
-        switch (shotStatus) {
-            case "empty":
-                handleShotMissed(x, y); changePlayer = true; break;
-            case "hidden":
-                handleShotHit(x, y); changePlayer = true; break;
-            case "hit":
-                falseMoveAlert("You can't shoot there!"); break;
-            case "miss":
-                falseMoveAlert("You can't shoot there!"); break;
-            case "mine":
-                handleShotMine(x, y); changePlayer = true; break;
-        }
-        if (changePlayer == true) {
-            getCurrentActivePlayer().addMana(1);
-            switchCurrentActivePlayer();
+        if (getCurrentActivePlayer().getShootMortar() == true) {
+            handleShootMortar(x, y);
+        } else {
+            Player enemy = getCurrentEnemy();
+            String[][] waterSpots = enemy.getWaterSpots();
+            String shotStatus = waterSpots[y][x];
+            boolean changePlayer = false;
+            switch (shotStatus) {
+                case "empty":
+                    handleShotMissed(x, y); changePlayer = true; break;
+                case "hidden":
+                    handleShotHit(x, y); changePlayer = true; break;
+                case "hit":
+                    falseMoveAlert("You can't shoot there!"); break;
+                case "miss":
+                    falseMoveAlert("You can't shoot there!"); break;
+                case "mine":
+                    handleShotMine(x, y); changePlayer = true; break;
+            }
+            if (changePlayer == true) {
+                getCurrentActivePlayer().addMana(1);
+                switchCurrentActivePlayer();
+            }
         }
     }
 
@@ -245,7 +249,31 @@ public class GameController {
         getCurrentActivePlayer().subtractMana(3);
     }
 
-    public void handleMortar() {
+    public void handlePlaceMortar() {
+        getCurrentActivePlayer().setShootMortar(true);
         getCurrentActivePlayer().subtractMana(5);
+    }
+
+    public void handleShootMortar(int x, int y) {
+        String[][] enemyWaterSpots = getCurrentEnemy().getWaterSpots();
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                switch (enemyWaterSpots[y+i][x+j]) {
+                    case "hidden":
+                        enemyWaterSpots[y+i][x+j] = "hit";
+                        getCurrentActivePlayer().checkDestroyedShips();
+                        getCurrentActivePlayer().addMana(1);
+                        break;
+                    case "empty":
+                        enemyWaterSpots[y+i][x+j] = "miss";
+                        break;
+                    case "mine":
+                        switchCurrentActivePlayer();
+                        handleShotMine(y+i, x+j);
+                        switchCurrentActivePlayer();
+                        break;
+                    }
+            }
+        }
     }
 }
