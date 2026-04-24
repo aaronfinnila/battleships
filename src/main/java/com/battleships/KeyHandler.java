@@ -8,12 +8,10 @@ import java.util.Set;
 public class KeyHandler {
     private Set<KeyCode> pressedKeys;
     private GameController controller;
-    private UI ui;
 
-    public KeyHandler(GameController controller, UI ui) {
+    public KeyHandler(GameController controller) {
         pressedKeys = new HashSet<>();
         this.controller = controller;
-        this.ui = ui;
     }
 
     public void handleKeyPressed(KeyEvent event) {
@@ -41,19 +39,11 @@ public class KeyHandler {
     }
 
     public void handleUp() {
-        if (controller.getGameState() == controller.HIDESTATE) {
-            if (ui.shipRow <= 4 && ui.shipRow > 0) {
-                ui.shipRow--;
-            }
-        }
+        
     }
 
     public void handleDown() {
-        if (controller.getGameState() == controller.HIDESTATE) {
-            if (ui.shipRow >= 0 && ui.shipRow < 4) {
-                ui.shipRow++;
-            }
-        }
+        
     }
     
     public void handleLeft() {

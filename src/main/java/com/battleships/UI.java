@@ -56,7 +56,7 @@ public class UI {
 
         root = new StackPane();
         scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
-        keyHandler = new KeyHandler(controller, this);
+        keyHandler = new KeyHandler(controller);
         
         startMenuVbox = createStartMenuVBox();
         gameViewPane = createGameViewPane();
