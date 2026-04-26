@@ -127,6 +127,14 @@ public class UI {
         root.getChildren().setAll(gameViewPane);
     }
 
+    public void resetGame() {
+        gameCanvas.stopCanvas();
+        controller = new GameController();
+        initialize();
+        root.getChildren().setAll(startMenuVbox);
+        show();
+    }
+
     public BorderPane createGameViewPane() {
         BorderPane borderPane = new BorderPane();
         setBorderPaneCenter(borderPane);
@@ -298,21 +306,5 @@ public class UI {
         Ship ship = leftPaneShips[index];
         shipRect.setHeight(ship.getLength()*shipSize);
         shipRect.setWidth(shipSize);
-    }
-
-    public GameCanvas getGameCanvas() {
-        return gameCanvas;
-    }
-
-    public KeyHandler getKeyHandler() {
-        return keyHandler;
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public Scene getScene() {
-        return scene;
     }
 }

@@ -139,7 +139,7 @@ public class GameController {
         alert.setTitle("Info");
         alert.setHeaderText(null);
         alert.setContentText(text);
-        alert.showAndWait();
+        alert.show();
     }
 
     public boolean activeShipsPlaced() {
@@ -174,7 +174,6 @@ public class GameController {
                     handleShotMine(x, y); changePlayer = true; break;
             }
             if (changePlayer == true) {
-                getCurrentActivePlayer().addMana(1);
                 switchCurrentActivePlayer();
             }
         }
@@ -241,7 +240,7 @@ public class GameController {
 
     public void handlePlaceMine() {
         getCurrentActivePlayer().setHideMine(true);
-        getCurrentActivePlayer().subtractMana(1);
+        getCurrentActivePlayer().subtractMana(2);
         gameState = HIDESTATE;
     }
 

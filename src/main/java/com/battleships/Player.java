@@ -13,6 +13,7 @@ public class Player {
     private boolean shipsPlaced;
     private boolean hideMine;
     private boolean shootMortar;
+    private boolean lostGame;
 
     public Player(String name) {
         this.name = name;
@@ -22,6 +23,7 @@ public class Player {
         equippedShip = ships[0];
         shipsPlaced = false;
         hideMine = false;
+        lostGame = false;
         for (int y = 0; y < 15; y++) {
             for (int x = 0; x < 15; x++) {
                 waterSpots[y][x] = "empty";
@@ -55,6 +57,19 @@ public class Player {
                 }
             }
         }
+        boolean allDestroyed = true;
+        for (int i = 0; i < ships.length; i++) {
+            if (ships[i].isDestroyed() == false) {
+                allDestroyed = false;
+            }
+        }
+        if (allDestroyed == true) {
+            lostGame = true;
+        }
+    }
+
+    public boolean getLostGame() {
+        return lostGame;
     }
 
     public void setShipsPlaced(boolean shipsPlaced) {
