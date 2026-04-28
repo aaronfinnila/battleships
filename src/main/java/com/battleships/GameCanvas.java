@@ -147,6 +147,20 @@ public class GameCanvas extends Canvas {
             }
         }
 
+        if (controller.getGameState() == controller.SHOOTSTATE) {
+            this.setOnMouseMoved(event -> {
+                mouseX = event.getX();
+                mouseY = event.getY();
+            });
+            int coordinateX = getSpotCoordinateX(mouseX);
+            int coordinateY = getSpotCoordinateY(mouseY);
+
+            if (controller.getCurrentActivePlayer().getShootMortar() == true) {
+                gc.setFill(Color.rgb(40, 58, 72));
+                gc.fillRect(coordinateX*SPOT_SIZE-SPOT_SIZE, coordinateY*SPOT_SIZE-SPOT_SIZE, SPOT_SIZE*3, SPOT_SIZE*3);
+            }
+        }
+
         if (controller.getGameState() == controller.HIDESTATE) {
             this.setOnMouseMoved(event -> {
                 mouseX = event.getX();

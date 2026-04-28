@@ -255,24 +255,29 @@ public class GameController {
 
     public void handleShootMortar(int x, int y) {
         String[][] enemyWaterSpots = getCurrentEnemy().getWaterSpots();
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                switch (enemyWaterSpots[y+i][x+j]) {
-                    case "hidden":
-                        enemyWaterSpots[y+i][x+j] = "hit";
-                        getCurrentActivePlayer().checkDestroyedShips();
-                        getCurrentActivePlayer().addMana(1);
-                        break;
-                    case "empty":
-                        enemyWaterSpots[y+i][x+j] = "miss";
-                        break;
-                    case "mine":
-                        switchCurrentActivePlayer();
-                        handleShotMine(y+i, x+j);
-                        switchCurrentActivePlayer();
-                        break;
+        if (x > 0 && y > 0 && x < 14 && y < 14) {
+            int realX = x-1;
+            int realY = y-1;
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    switch (enemyWaterSpots[realY+i][realX+j]) {
+                        case "hidden":
+                            enemyWaterSpots[realY+i][realX+j] = "hit";
+                            getCurrentActivePlayer().checkDestroyedShips();
+                            getCurrentEnemy().addMana(1);
+                            break;
+                            case "empty":
+                                enemyWaterSpots[realY+i][realX+j] = "miss";
+                                break;
+                        case "mine":
+                            switchCurrentActivePlayer();
+                            handleShotMine(realY+i, realX+j);
+                            switchCurrentActivePlayer();
+                            break;
+                        }
                     }
-            }
+                }
+                getCurrentActivePlayer().setShootMortar(false);
         }
     }
 }
