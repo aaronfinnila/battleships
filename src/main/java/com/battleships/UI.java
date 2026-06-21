@@ -198,7 +198,7 @@ public class UI {
         Button ability1 = new Button("mine");
         ability1.setOnAction(event -> {
             if (controller.getGameState() == controller.SHOOTSTATE) {
-                if (controller.getCurrentActivePlayer().getMana() >= 1) {
+                if (controller.getCurrentActivePlayer().getMana() >= 2) {
                     controller.handlePlaceMine();
                     updateMana();
                 } else {
