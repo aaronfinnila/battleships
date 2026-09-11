@@ -6,24 +6,30 @@ public class Player {
     private String name;
     private int mana;
     // use this to track status of water spots. 
-    // values: hidden, empty, hit, miss, mine
+    // values: hidden, empty, hit, miss, mine, radar
     private String waterSpots[][];
+    private int radarMap[][];
     private Ship ships[];
     private Ship equippedShip;
     private boolean shipsPlaced;
     private boolean hideMine;
     private boolean shootMortar;
+    private boolean placeRadar;
     private boolean lostGame;
+    private boolean shotUsed;
 
     public Player(String name) {
         this.name = name;
-        mana = MAX_MANA;
+        mana = 2;
         waterSpots = new String[15][15];
+        radarMap = new int[15][15];
         ships = new Ship[] {new Ship(2), new Ship(2), new Ship(3), new Ship(4)};
         equippedShip = ships[0];
         shipsPlaced = false;
         hideMine = false;
         lostGame = false;
+        shotUsed = false;
+        placeRadar = false;
         for (int y = 0; y < 15; y++) {
             for (int x = 0; x < 15; x++) {
                 waterSpots[y][x] = "empty";
@@ -66,6 +72,14 @@ public class Player {
         if (allDestroyed == true) {
             lostGame = true;
         }
+    }
+
+    public void setShotUsed(boolean shotUsed) {
+        this.shotUsed = shotUsed;
+    }
+
+    public boolean getShotUsed() {
+        return shotUsed;
     }
 
     public boolean getLostGame() {
@@ -116,8 +130,28 @@ public class Player {
         this.shootMortar = shootMortar;
     }
 
+    public boolean getPlaceRadar() {
+        return placeRadar;
+    }
+
+    public void setPlaceRadar(boolean placeRadar) {
+        this.placeRadar = placeRadar;
+    }
+
+    public void setRadarMapPoint(int x, int y, int shootablesAmount) {
+        radarMap[y][x] = shootablesAmount;
+    }
+
+    public int getRadarMapPoint(int x, int y) {
+        return radarMap[y][x];
+    }
+
     public String[][] getWaterSpots() {
         return waterSpots;
+    }
+
+    public String getWaterSpot(int x, int y) {
+        return waterSpots[y][x];
     }
 
     public int getMana() {

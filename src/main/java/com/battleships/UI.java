@@ -188,6 +188,7 @@ public class UI {
         VBox botVbox = new VBox(50);
         HBox manaHbox = new HBox(0);
         HBox abilityHbox = new HBox(30);
+        HBox buttonsHbox = new HBox(300);
         BorderPane.setMargin(manaHbox, new Insets(0, 0, 90, 0));
         for (int i = 0; i < botPaneRects.length; i++) {
             botPaneRects[i] = new Rectangle(40, 25);
@@ -210,7 +211,7 @@ public class UI {
         ability2.setOnAction(event -> {
             if (controller.getGameState() == controller.SHOOTSTATE) {
                 if (controller.getCurrentActivePlayer().getMana() >= 3) {
-                    controller.handleRadar();
+                    controller.handlePlaceRadar();
                     updateMana();
                 } else {
                     controller.falseMoveAlert("Not enough mana!");
@@ -229,10 +230,24 @@ public class UI {
                 }
             }
         });
+        Button endTurn = new Button("End Turn");
+        endTurn.setOnAction(event -> {
+            if (controller.getGameState() == controller.SHOOTSTATE) {
+                if (controller.getCurrentActivePlayer().getShotUsed() == false) {
+                    controller.falseMoveAlert("You can still shoot this turn!");
+                } else {
+                    controller.switchCurrentActivePlayer();
+                    controller.getCurrentInactivePlayer().setShotUsed(false);
+                }
+            }
+        });
+        
         abilityHbox.getChildren().addAll(ability1, ability2, ability3);
-        abilityHbox.setAlignment(Pos.CENTER);
+        
+        buttonsHbox.getChildren().addAll(abilityHbox, endTurn);
+        buttonsHbox.setAlignment(Pos.CENTER_RIGHT);
 
-        botVbox.getChildren().addAll(manaHbox, abilityHbox);
+        botVbox.getChildren().addAll(manaHbox, buttonsHbox);
         borderPane.setBottom(botVbox);
     }
 
@@ -294,6 +309,8 @@ public class UI {
                         cell.setFill(Color.rgb(18, 100, 201)); break;
                     case "mine":
                         cell.setFill(Color.rgb(40, 58, 72)); break;
+                    case "radar":
+                        cell.setFill(Color.rgb(3, 234, 134)); break;
                 }
                 cells[row][col] = cell;
                 rightPaneGrid.add(cell, col, row);

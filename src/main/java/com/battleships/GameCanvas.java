@@ -45,6 +45,7 @@ public class GameCanvas extends Canvas {
             controller.handleClick(xi, yi);
             ui.updateShips();
             ui.updateGameOver();
+            ui.updateRightPaneGrid(controller.getCurrentActivePlayer().getWaterSpots());
         });
 
         gameLoop = new AnimationTimer() {
@@ -73,7 +74,6 @@ public class GameCanvas extends Canvas {
         Player currentPlayer = controller.getCurrentActivePlayer();
 
         if (!currentPlayer.equals(canvasActivePlayer)) {
-            System.out.println("update called");
             canvasActivePlayer = currentPlayer;
             ui.updateLabels();
             ui.updateShips();
@@ -113,9 +113,7 @@ public class GameCanvas extends Canvas {
                 if (controller.getGameState() == controller.HIDESTATE) {
                     waterSpots = controller.getCurrentActivePlayer().getWaterSpots();
                 } else {
-                    waterSpots = controller.getCurrentActivePlayer().equals(controller.getPlayer1())
-                     ? controller.getPlayer2().getWaterSpots()
-                     : controller.getPlayer1().getWaterSpots();
+                    waterSpots = controller.getCurrentInactivePlayer().getWaterSpots();
                 }
                 switch (waterSpots[(int) y][(int) x]) {
                     case "hit":
@@ -135,7 +133,14 @@ public class GameCanvas extends Canvas {
                         if (controller.getGameState() == controller.HIDESTATE) {
                             gc.setFill(Color.rgb(25, 37, 46));
                             gc.fillRect(x*cellSize, y*cellSize, cellSize, cellSize);
-                        }
+                        } break;
+                    case "radar":
+                        gc.setFill(Color.rgb(3, 234, 134));
+                        gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
+                        String radarShootablesString = Integer.toString(controller.getCurrentInactivePlayer().getRadarMapPoint((int) x, (int) y));
+                        gc.setFill(Color.BLACK);
+                        gc.fillText(radarShootablesString, (x*cellSize)+14, (y*cellSize)+22);
+                        break;
                 }
             }
         }
@@ -148,9 +153,27 @@ public class GameCanvas extends Canvas {
             int coordinateX = getSpotCoordinateX(mouseX);
             int coordinateY = getSpotCoordinateY(mouseY);
 
-            if (controller.getCurrentActivePlayer().getShootMortar() == true) {
+            Player currentPlayer = controller.getCurrentActivePlayer();
+
+            boolean shootMortar = currentPlayer.getShootMortar();
+            boolean placeRadar = currentPlayer.getPlaceRadar();
+            boolean shotUsed = currentPlayer.getShotUsed();
+
+            if (shootMortar == true) {
                 gc.setFill(Color.rgb(40, 58, 72));
                 gc.fillRect(coordinateX*SPOT_SIZE-SPOT_SIZE, coordinateY*SPOT_SIZE-SPOT_SIZE, SPOT_SIZE*3, SPOT_SIZE*3);
+            }
+
+            if (placeRadar == true) {
+                if (controller.getCurrentInactivePlayer().getWaterSpot(coordinateX, coordinateY).equals("miss")) {
+                    gc.setFill(Color.rgb(3, 234, 134, 0.8));
+                    gc.fillOval(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE, SPOT_SIZE);
+                }
+            }
+            
+            if (shotUsed == true && placeRadar == false && shootMortar == false) {
+                gc.setFill(Color.rgb(40, 58, 72, 0.1));
+                gc.fillOval(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE, SPOT_SIZE);
             }
         }
 
