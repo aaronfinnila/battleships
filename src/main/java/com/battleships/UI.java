@@ -301,6 +301,17 @@ public class UI {
         }
     }
 
+    public void updateGameOver() {
+        if (controller.getPlayer1().getLostGame()) {
+            controller.falseMoveAlert("Player 2 won the game!");
+            resetGame();
+        }
+        if (controller.getPlayer2().getLostGame()) {
+            controller.falseMoveAlert("Player 1 won the game!");
+            resetGame();
+        }
+    }
+
     public void setLeftPaneShip(Rectangle shipRect, int index) {
         int shipSize = gameCanvas.SPOT_SIZE-3;
         Ship ship = leftPaneShips[index];

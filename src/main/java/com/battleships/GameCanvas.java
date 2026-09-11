@@ -43,6 +43,8 @@ public class GameCanvas extends Canvas {
             int xi = (int)(event.getX() / SPOT_SIZE);
             int yi = (int)(event.getY() / SPOT_SIZE);
             controller.handleClick(xi, yi);
+            ui.updateShips();
+            ui.updateGameOver();
         });
 
         gameLoop = new AnimationTimer() {
@@ -71,6 +73,7 @@ public class GameCanvas extends Canvas {
         Player currentPlayer = controller.getCurrentActivePlayer();
 
         if (!currentPlayer.equals(canvasActivePlayer)) {
+            System.out.println("update called");
             canvasActivePlayer = currentPlayer;
             ui.updateLabels();
             ui.updateShips();
@@ -78,16 +81,6 @@ public class GameCanvas extends Canvas {
                 Player enemy = canvasActivePlayer.equals(controller.getPlayer1()) ? controller.getPlayer1() : controller.getPlayer2();
                 ui.updateRightPaneGrid(enemy.getWaterSpots());
                 ui.updateMana();
-
-                if (controller.getPlayer1().getLostGame() || controller.getPlayer2().getLostGame()) {
-                    if (controller.getPlayer1().getLostGame()) {
-                        controller.falseMoveAlert("Player 2 won the game!");
-                    }
-                    if (controller.getPlayer2().getLostGame()) {
-                        controller.falseMoveAlert("Player 1 won the game!");
-                    }
-                    ui.resetGame();
-                }
             }
         }
     }

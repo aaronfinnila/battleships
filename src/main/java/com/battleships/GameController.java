@@ -41,6 +41,14 @@ public class GameController {
         }
     }
 
+    public Player getCurrentInactivePlayer() {
+        if (currentActivePlayer.equals("player1")) {
+            return player2;
+        } else {
+            return player1;
+        }
+    }
+
     public void switchCurrentActivePlayer() {
         currentActivePlayer = currentActivePlayer.equals("player1") ? "player2" : "player1";
     }
@@ -165,7 +173,7 @@ public class GameController {
                 case "empty":
                     handleShotMissed(x, y); changePlayer = true; break;
                 case "hidden":
-                    handleShotHit(x, y); changePlayer = true; break;
+                    handleShotHit(x, y); break;
                 case "hit":
                     falseMoveAlert("You can't shoot there!"); break;
                 case "miss":
@@ -215,7 +223,7 @@ public class GameController {
     }
 
     public void handleShotHit(int x, int y) {
-        nextTurnAlert("You hit a ship!");
+        continueAlert("You hit a ship!");
         Player enemy = getCurrentEnemy();
         String[][] waterSpots = enemy.getWaterSpots();
         waterSpots[y][x] = "hit";
@@ -235,6 +243,16 @@ public class GameController {
         alert.setContentText(text);
         Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
         okButton.setText("Next turn");
+        alert.showAndWait();
+    }
+
+    public void continueAlert(String text) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText(null);
+        alert.setContentText(text);
+        Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+        okButton.setText("Continue");
         alert.showAndWait();
     }
 
@@ -263,7 +281,7 @@ public class GameController {
                     switch (enemyWaterSpots[realY+i][realX+j]) {
                         case "hidden":
                             enemyWaterSpots[realY+i][realX+j] = "hit";
-                            getCurrentActivePlayer().checkDestroyedShips();
+                            getCurrentInactivePlayer().checkDestroyedShips();
                             getCurrentEnemy().addMana(1);
                             break;
                             case "empty":

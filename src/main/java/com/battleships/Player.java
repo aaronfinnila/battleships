@@ -36,7 +36,7 @@ public class Player {
             Ship ship = ships[i];
             int x = ship.getPositionX();
             int y = ship.getPositionY();
-            if (waterSpots[y][x].equals("hit")) {
+            if (ship.isDestroyed() == false && waterSpots[y][x].equals("hit")) {
                 boolean destr = true;
                 switch (ship.getRotation()) {
                     case "vertical":
