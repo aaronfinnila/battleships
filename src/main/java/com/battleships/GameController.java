@@ -294,13 +294,11 @@ public class GameController {
                     }
                 }
             }
-            System.out.println(shootablesFound);
             getCurrentInactivePlayer().setRadarMapPoint(x, y, shootablesFound);
             getCurrentActivePlayer().setPlaceRadar(false);
             enemyWaterSpots[y][x] = "radar";
         } else if (getCurrentActivePlayer().getPlaceRadar() == true) {
             falseMoveAlert("You can't place a radar there!");
-            System.out.println(shotStatus);
         }
     }
 
