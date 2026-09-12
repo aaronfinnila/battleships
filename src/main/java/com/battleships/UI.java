@@ -210,11 +210,13 @@ public class UI {
         Button ability2 = new Button("radar");
         ability2.setOnAction(event -> {
             if (controller.getGameState() == controller.SHOOTSTATE) {
-                if (controller.getCurrentActivePlayer().getMana() >= 3) {
+                if (controller.getCurrentActivePlayer().getMana() < 3) {
+                    controller.falseMoveAlert("Not enough mana!");
+                } else if (controller.getCurrentInactivePlayer().waterSpotsInclude("miss") == false) {
+                    controller.falseMoveAlert("You have nothing to place a radar on!");
+                } else {
                     controller.handlePlaceRadar();
                     updateMana();
-                } else {
-                    controller.falseMoveAlert("Not enough mana!");
                 }
             }
         });

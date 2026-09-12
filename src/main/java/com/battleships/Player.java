@@ -74,6 +74,17 @@ public class Player {
         }
     }
 
+    public boolean waterSpotsInclude(String value) {
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++) {
+                if (waterSpots[j][i].equals(value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public void setShotUsed(boolean shotUsed) {
         this.shotUsed = shotUsed;
     }

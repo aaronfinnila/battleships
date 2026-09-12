@@ -98,6 +98,9 @@ public class GameCanvas extends Canvas {
     private void drawCanvas() {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
+
+        Player activePlayer = controller.getCurrentActivePlayer();
+        Player inactivePlayer = controller.getCurrentInactivePlayer();
         
         double cellSize = (double) SPOT_SIZE;
         double offsetX = 0;
@@ -111,9 +114,9 @@ public class GameCanvas extends Canvas {
                 offsetX+x*cellSize, offsetY+(y+1)*cellSize);
                 String[][] waterSpots;
                 if (controller.getGameState() == controller.HIDESTATE) {
-                    waterSpots = controller.getCurrentActivePlayer().getWaterSpots();
+                    waterSpots = activePlayer.getWaterSpots();
                 } else {
-                    waterSpots = controller.getCurrentInactivePlayer().getWaterSpots();
+                    waterSpots = inactivePlayer.getWaterSpots();
                 }
                 switch (waterSpots[(int) y][(int) x]) {
                     case "hit":
@@ -121,8 +124,13 @@ public class GameCanvas extends Canvas {
                         gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
                         break;
                     case "miss":
-                        gc.setFill(Color.rgb(95, 162, 204));
-                        gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
+                        if (activePlayer.getPlaceRadar() == true) {
+                            gc.setFill(Color.rgb(0, 128, 207));
+                            gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
+                        } else {
+                            gc.setFill(Color.rgb(95, 162, 204));
+                            gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
+                        }
                         break;
                     case "hidden":
                         if (controller.getGameState() == controller.HIDESTATE) {
@@ -137,7 +145,7 @@ public class GameCanvas extends Canvas {
                     case "radar":
                         gc.setFill(Color.rgb(3, 234, 134));
                         gc.fillOval(x*cellSize, y*cellSize, cellSize, cellSize);
-                        String radarShootablesString = Integer.toString(controller.getCurrentInactivePlayer().getRadarMapPoint((int) x, (int) y));
+                        String radarShootablesString = Integer.toString(inactivePlayer.getRadarMapPoint((int) x, (int) y));
                         gc.setFill(Color.BLACK);
                         gc.fillText(radarShootablesString, (x*cellSize)+14, (y*cellSize)+22);
                         break;
@@ -171,7 +179,7 @@ public class GameCanvas extends Canvas {
                 }
             }
             
-            if (shotUsed == true && placeRadar == false && shootMortar == false) {
+            if (shotUsed == false && placeRadar == false && shootMortar == false) {
                 gc.setFill(Color.rgb(40, 58, 72, 0.1));
                 gc.fillOval(coordinateX*SPOT_SIZE, coordinateY*SPOT_SIZE, SPOT_SIZE, SPOT_SIZE);
             }
