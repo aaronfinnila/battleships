@@ -2,6 +2,8 @@ package com.battleships;
 
 import java.util.Optional;
 
+import com.battleships.client.Client;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,6 +26,7 @@ public class UI {
     public static final double VBOX_TOP_MARGIN = 180;
     public static final String TITLE = "Battleships";
 
+    private Client client;
     private GameController controller;
     private Stage stage;
     private Scene scene;
@@ -87,7 +90,7 @@ public class UI {
         VBox vbox = new VBox(35);
 
         Label title = new Label(TITLE);
-        Button startGameButton = new Button("Start Game");
+        Button startGameButton = new Button("Connect to game server");
         
         vbox.setAlignment(Pos.CENTER);
         vbox.getChildren().addAll(title, startGameButton);
@@ -102,12 +105,18 @@ public class UI {
         TextInputDialog dialog = new TextInputDialog();
 
         dialog.setTitle("Input");
-        dialog.setHeaderText("Enter player 1 name");
-        dialog.setContentText("Name:");
+        dialog.setHeaderText("Enter address of game server (if localhost, enter 'local')");
+        dialog.setContentText("Address:");
 
         Optional<String> result = dialog.showAndWait();
 
         result.ifPresent(input -> {
+            client = new Client(input);
+            // TODO: figure out how client and UI should communicate (instead of BufferedReader)
+            // TODO: have client act as middle man between UI and server
+        });
+        
+        /* result.ifPresent(input -> {
             controller.getPlayer1().setName(input);
 
             TextInputDialog dialog2 = new TextInputDialog();
@@ -120,7 +129,7 @@ public class UI {
             result2.ifPresent(input2 -> {
                 controller.getPlayer2().setName(input2);
             });
-        });
+        }); */
 
         updateLabels();
         updateShips();
