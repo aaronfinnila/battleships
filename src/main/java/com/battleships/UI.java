@@ -7,7 +7,10 @@ import com.battleships.client.Client;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
@@ -112,6 +115,14 @@ public class UI {
 
         result.ifPresent(input -> {
             client = new Client(input);
+
+            String message = client.showMessage();
+            while (message == null);
+            if (message != null) {
+                System.out.println("test");
+                okAlert(message);
+            }
+
             // TODO: figure out how client and UI should communicate (instead of BufferedReader)
             // TODO: have client act as middle man between UI and server
         });
@@ -345,5 +356,15 @@ public class UI {
         Ship ship = leftPaneShips[index];
         shipRect.setHeight(ship.getLength()*shipSize);
         shipRect.setWidth(shipSize);
+    }
+
+    public void okAlert(String text) {
+    Alert alert = new Alert(AlertType.INFORMATION);
+    alert.setTitle("Info");
+    alert.setHeaderText(null);
+    alert.setContentText(text);
+    Button okButton = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+    okButton.setText("Continue");
+    alert.showAndWait();
     }
 }

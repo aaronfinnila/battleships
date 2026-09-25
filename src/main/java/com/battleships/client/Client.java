@@ -8,6 +8,7 @@ public class Client {
 	private BufferedReader input;
 	private DataOutputStream out;
 	private DataInputStream in;
+	private String message;
 
 	public Client(String address) {
 		try {
@@ -19,13 +20,32 @@ public class Client {
 			input = new BufferedReader(new InputStreamReader(System.in));
 			out = new DataOutputStream(socket.getOutputStream());
 			in = new DataInputStream(socket.getInputStream());
+			message = null;
 		} catch(UnknownHostException u) {
 			System.out.println(u);
 		} catch(IOException i) {
 			System.out.println(i);
 		}
 
-		String line = "";
+		new Thread(() -> {
+			while (true) {
+				try {
+					String incoming = in.readUTF();
+					if (incoming.length() > 4096) {
+						System.out.println("Incoming readUTF size too large, closing socket");
+						setMessage("Incoming readUTF size too large, closing socket");
+						socket.close();
+					}
+					setMessage(incoming);
+				} catch(IOException i) {
+					System.out.println(i);
+					setMessage("IOException: something wrong");
+					break;
+				}
+			}
+		}).start();
+
+/* 		String line = "";
 		try {
 			System.out.println("");
 			System.out.println("Host connection or connect to existing?");
@@ -67,23 +87,8 @@ public class Client {
 			System.out.println(incoming);
 		} catch (IOException i) {
 			System.out.println(i);
-		}
+		} */
 
-		new Thread(() -> {
-			while (true) {
-				try {
-					String incoming = in.readUTF();
-					if (incoming.length() > 4096) {
-						System.out.println("Incoming readUTF size too large, closing socket");
-						socket.close();
-					}
-					System.out.println(incoming);
-				} catch(IOException i) {
-					System.out.println(i);
-					break;
-				}
-			}
-		}).start();
 
 		try {
 			input.close();
@@ -92,5 +97,17 @@ public class Client {
 		} catch(IOException i) {
 			System.out.println(i);
 		}
+	}
+
+	public String showMessage() {
+		if (message != null && !message.isEmpty()) {
+			return message;
+		} else {
+			return null;
+		}
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 }
